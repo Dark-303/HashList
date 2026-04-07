@@ -42,6 +42,7 @@ import java.util.Random;
 public class HashList<T> extends AbstractCollection<T> {
     private final ArrayList<T> list;
     private final HashSet<T> set;
+    private static final Random random = new Random();
 
     /**
      * Constructs an empty list with the specified initial capacity.
@@ -62,9 +63,9 @@ public class HashList<T> extends AbstractCollection<T> {
     }
 
     @Override
-    public boolean add(T item) {
-        if (set.add(item)) {
-            return list.add(item);
+    public boolean add(T element) {
+        if (set.add(element)) {
+            return list.add(element);
         }
         return false;
     }
@@ -76,8 +77,8 @@ public class HashList<T> extends AbstractCollection<T> {
     }
 
     @Override
-    public boolean contains(Object item) {
-        return set.contains(item);
+    public boolean contains(Object element) {
+        return set.contains(element);
     }
 
     @Override
@@ -98,6 +99,33 @@ public class HashList<T> extends AbstractCollection<T> {
         return list.size();
     }
 
+    @Override
+    public Object[] toArray() {
+        return list.toArray();
+    }
+
+    @Override
+    public <E> E[] toArray(E[] a) {
+        return list.toArray(a);
+    }
+
+    /**
+     * Inserts the specified element at the specified position in this list. Shifts the element
+     * currently at that position (if any) and any subsequent elements to the right (adds one to
+     * their indices).
+     *
+     * @param index index at which the specified element is to be inserted
+     * @param element element to be inserted
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    public boolean add(int index, T element) {
+        if (set.add(element)) {
+            list.add(index, element);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Returns the element at the specified position in this list.
      *
@@ -110,12 +138,65 @@ public class HashList<T> extends AbstractCollection<T> {
     }
 
     /**
-     * Returns {@code true} if this list contains no elements.
+     * Returns a random element from this collection.
      *
-     * @return {@code true} if this list contains no elements
+     * @param rnd the source of randomness
+     * @return a random element from this collection
+     * @throws IndexOutOfBoundsException if the collection is empty
+     */
+    public T getRandom(Random rnd) {
+        return list.get(rnd.nextInt(list.size()));
+    }
+
+    /**
+     * Returns a random element from this collection.
+     *
+     * @return a random element from this collection
+     * @throws IndexOutOfBoundsException if the collection is empty
+     */
+    public T getRandom() {
+        return this.getRandom(random);
+    }
+
+    /**
+     * Returns the index of the specified element in this list, or -1 if this list does not contain
+     * the element. More formally, returns the lowest index {@code i} such that
+     * {@code Objects.equals(o, get(i))}, or -1 if there is no such index.
+     * 
+     * @param o element to search for
+     * @return the index of the specified element in this list, or -1 if this list does not contain
+     *         the element
+     */
+    public int indexOf(Object o) {
+        if (!set.contains(o)) {
+            return -1;
+        }
+        return list.indexOf(o);
+    }
+
+    /**
+     * Returns {@code true} if this collection contains no elements.
+     *
+     * @return {@code true} if this collection contains no elements
      */
     public boolean isEmpty() {
         return list.isEmpty();
+    }
+
+    /**
+     * Returns the index of the specified element in this list, or -1 if this list does not contain
+     * the element. More formally, returns the highest index {@code i} such that
+     * {@code Objects.equals(o, get(i))}, or -1 if there is no such index.
+     * 
+     * @param o element to search for
+     * @return the index of the specified element in this list, or -1 if this list does not contain
+     *         the element
+     */
+    public int lastIndexOf(Object o) {
+        if (!set.contains(o)) {
+            return -1;
+        }
+        return list.lastIndexOf(o);
     }
 
     /**
@@ -127,9 +208,9 @@ public class HashList<T> extends AbstractCollection<T> {
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public T remove(int index) {
-        T item = list.remove(index);
-        set.remove(item);
-        return item;
+        T element = list.remove(index);
+        set.remove(element);
+        return element;
     }
 
     /**
@@ -142,15 +223,15 @@ public class HashList<T> extends AbstractCollection<T> {
      */
     public T removeFast(int index) {
         int last = list.size() - 1;
-        T item = list.get(index);
-        T lastItem = list.get(last);
+        T element = list.get(index);
+        T lastElement = list.get(last);
         if (index != last) {
-            list.set(index, lastItem);
+            list.set(index, lastElement);
         }
 
-        set.remove(item);
+        set.remove(element);
         list.remove(last);
-        return item;
+        return element;
     }
 
     /**
